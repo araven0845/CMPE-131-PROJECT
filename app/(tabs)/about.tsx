@@ -1,52 +1,13 @@
-/*
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image, Alert, Platform } from 'react-native';
 import React, { useState } from 'react';
 import Button from '@/components/button';
-
-export default function AboutScreen() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.footerContainer}>
-        <Button label="Log In" theme="primary"></Button>
-        <Button label="Sign Up"></Button>
-      </View>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: {
-    color: '#fff',
-  },
-  footerContainer: {
-    flex: 1/7,
-    alignItems: "center",
-  },
-});
-*/
-
-// app/about.tsx
-import React, { useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  Platform,
-  Alert,
-} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '@/context/AuthContext';
 import * as ImagePicker from 'expo-image-picker';
 
 export default function AboutScreen() {
-  // Profile details state with some initial default values
+  const { signout,user } = useAuth();
+
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState('Name');
   const [weight, setWeight] = useState('');
@@ -88,7 +49,12 @@ export default function AboutScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+
+      <View style={styles.footerContainer}>
+        <Text style={styles.text}>Welcome, {user.name}</Text>
+      </View>
+
       <View style={styles.profileContainer}>
         <TouchableOpacity onPress={isEditing ? pickImage : undefined}>
           {profilePicture ? (
@@ -113,7 +79,7 @@ export default function AboutScreen() {
             placeholderTextColor="#888"
           />
         ) : (
-          <Text style={styles.profileText}>{name}</Text>
+          <Text style={styles.profileText}>{user.name}</Text>
         )}
       </View>
 
@@ -171,7 +137,11 @@ export default function AboutScreen() {
       >
         <Text style={styles.buttonText}>{isEditing ? 'Save' : 'Edit Profile'}</Text>
       </TouchableOpacity>
-    </View>
+      
+      <TouchableOpacity style={styles.button} onPress={signout}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 }
 
@@ -179,8 +149,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#25292e',
-    padding: 20,
+    justifyContent: 'center',
     alignItems: 'center',
+  },
+  text: {
+    color: '#fff',
+    fontSize: 20,
+  },
+  footerContainer: {
+    flex: 1/2,
+    alignItems: "center",
+  },
+  button: {
+    backgroundColor: "black",
+    padding: 12,
+    borderRadius: 6,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
   },
   profileContainer: {
     alignItems: 'center',
@@ -249,9 +238,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 30,
     marginVertical: 20,
-  },
-  buttonText: {
-    color: '#25292e',
-    fontSize: 16,
   },
 });

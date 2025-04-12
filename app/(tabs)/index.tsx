@@ -1,11 +1,16 @@
-import { Text, View, StyleSheet } from 'react-native';
- import { Link } from 'expo-router'; 
+import { Text, View, StyleSheet, FlatList } from 'react-native';
+import { Link } from 'expo-router'; 
+//import {config, database} from '@/lib/appwrite'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Index() {
+  
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Home Screen</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.footerContainer}>
+        <Text style={styles.text}>Home Screen</Text>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -18,10 +23,10 @@ const styles = StyleSheet.create({
   },
   text: {
     color: '#fff',
-  },
-  button: {
     fontSize: 20,
-    textDecorationLine: 'underline',
-    color: '#fff',
+  },
+  footerContainer: {
+    flex: 1/4,
+    alignItems: "center",
   },
 });

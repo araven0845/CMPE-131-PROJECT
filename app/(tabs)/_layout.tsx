@@ -1,7 +1,6 @@
 import { Tabs } from 'expo-router';
-
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import {AuthProvider} from '@/context/AuthContext'
 
 export default function TabLayout() {
   return (
