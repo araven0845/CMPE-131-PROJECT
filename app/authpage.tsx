@@ -1,0 +1,197 @@
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
+import { colors, spacing, typography } from '@/constants/theme';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@firebase/auth';
+import { auth } from '@/FirebaseConfig';
+import { useRouter } from 'expo-router';
+import { Eye, EyeOff, Home } from 'lucide-react-native';
+
+export default function AuthScreen() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  
+  const signin = async () => {
+    try {
+      const user = await signInWithEmailAndPassword(auth, email, password);
+      if (user) router.replace('/(tabs)');
+    } catch (error: any) {
+      console.error(error);
+      if (error.code === 'auth/wrong-password') {
+        alert('Incorrect password. Please try again.');
+      } else {
+        alert('Sign in failed');
+      }
+    }
+  };
+  
+  const signup = async () => {
+    try {
+      const user = await createUserWithEmailAndPassword(auth, email, password);
+      if (user) router.replace('/(tabs)');
+    } catch (error: any) {
+      console.error(error);
+      alert('Sign in failed: ' + error.message);
+    }
+  };
+  const handleAuth = () => {
+      if (isLogin) {
+        signin();
+      } else {
+        signup();
+      }
+  };
+
+  const handleHomePress = () => {
+      router.replace('/');  // Navigate to home screen
+  };
+
+  // Clear password state when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      setPassword('');
+    }, [])
+  );
+
+return (
+<SafeAreaView style={styles.container}>
+  <TouchableOpacity 
+    style={styles.homeButton}
+    onPress={handleHomePress}
+  >
+    <View style={styles.homeButtonContent}>
+      <Home size={24} color={colors.text.primary} />
+      <Text style={styles.homeButtonText}>Back to Home</Text>
+    </View>
+  </TouchableOpacity>
+  
+  <View style={styles.content}>
+    <Text style={styles.title}>{isLogin ? 'Login' : 'Create Account'}</Text>
+    
+    <TextInput
+      placeholder="Email"
+      value={email}
+      onChangeText={setEmail}
+      style={styles.input}
+      autoCapitalize="none"
+      keyboardType="email-address"
+    />
+    
+    <View style={styles.passwordContainer}>
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        style={[styles.input, styles.passwordInput]}
+        secureTextEntry={!showPassword}
+      />
+      <TouchableOpacity 
+        style={styles.eyeButton}
+        onPress={() => setShowPassword(!showPassword)}
+      >
+        {showPassword ? (
+          <Eye size={24} color={colors.text.secondary} />
+        ) : (
+          <EyeOff size={24} color={colors.text.secondary} />
+        )}
+      </TouchableOpacity>
+    </View>
+    
+    <TouchableOpacity style={styles.button} onPress={handleAuth}>
+      <Text style={styles.buttonText}>
+        {isLogin ? 'Sign In' : 'Sign Up'}
+      </Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity 
+      style={styles.switchButton} 
+      onPress={() => setIsLogin(!isLogin)}
+    >
+      <Text style={styles.switchText}>
+        {isLogin ? "Don't have an account? Sign Up" : 'Already have an account? Sign In'}
+      </Text>
+    </TouchableOpacity>
+  </View>
+</SafeAreaView>
+);
+}
+
+const styles = StyleSheet.create({
+container: {
+  flex: 1,
+  backgroundColor: colors.background,
+},
+homeButton: {
+  position: 'absolute',
+  top: spacing.xlarge + 40, // Increased to lower the button
+  left: spacing.large,
+  zIndex: 1,
+  padding: spacing.small,
+  backgroundColor: colors.cardAlt,
+  borderRadius: 8,
+},
+homeButtonContent: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  gap: spacing.xsmall,
+},
+homeButtonText: {
+  ...typography.button,
+  color: colors.text.primary,
+  marginLeft: spacing.xsmall,
+},
+content: {
+  flex: 1,
+  justifyContent: 'center',
+  padding: spacing.large,
+  paddingTop: spacing.xlarge + 80, // Increased top padding to account for larger header
+},
+title: {
+  ...typography.h1,
+  textAlign: 'center',
+  marginBottom: spacing.xlarge,
+},
+input: {
+  backgroundColor: colors.cardAlt,
+  padding: spacing.medium,
+  borderRadius: 8,
+  marginBottom: spacing.medium,
+  ...typography.body,
+},
+button: {
+  backgroundColor: colors.primary,
+  padding: spacing.medium,
+  borderRadius: 8,
+  alignItems: 'center',
+  marginTop: spacing.medium,
+},
+buttonText: {
+  ...typography.button,
+  color: colors.white,
+},
+switchButton: {
+  marginTop: spacing.large,
+  alignItems: 'center',
+},
+switchText: {
+  ...typography.body,
+  color: colors.primary,
+},
+passwordContainer: {
+  position: 'relative',
+  width: '100%',
+  marginBottom: spacing.medium,
+},
+passwordInput: {
+  paddingRight: 50, // Make room for the eye icon
+},
+eyeButton: {
+  position: 'absolute',
+  right: 12,
+  top: '50%',
+  transform: [{ translateY: -12 }],
+},
+});
