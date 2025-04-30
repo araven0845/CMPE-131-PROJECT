@@ -322,7 +322,6 @@ export default function ProfileScreen() {
               
               <SettingsItem
                 label="Change Password"
-                description="Last changed 3 months ago"
                 onPress={() => setShowPasswordModal(true)}
               />
               
