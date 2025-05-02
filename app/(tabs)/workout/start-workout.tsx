@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Play, Pause, Save, Plus, X, ArrowLeft, Trash2 } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/constants/theme';
 import { WorkoutContext } from '@/context/WorkoutContext';
 import Timer from '@/components/common/Timer';
@@ -9,6 +8,8 @@ import { ExerciseSet, WorkoutExercise, WorkoutRoutine } from '@/types/workout';
 import ExerciseCard from '@/components/workout/ExerciseCard';
 import { formatDuration } from '@/utils/timeUtils';
 import { generateUniqueId } from '@/utils/idUtils';
+import Feather from '@expo/vector-icons/Feather';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function StartWorkoutScreen() {
   const { routineId } = useLocalSearchParams<{ routineId: string }>();
@@ -170,7 +171,7 @@ export default function StartWorkoutScreen() {
           style={styles.backButton} 
           onPress={() => router.back()}
         >
-          <ArrowLeft size={24} color={colors.text.primary} />
+          <AntDesign name="arrowleft" size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <TextInput
           style={styles.workoutNameInput}
@@ -191,9 +192,9 @@ export default function StartWorkoutScreen() {
           onPress={toggleTimer}
         >
           {isTimerRunning ? (
-            <Pause size={24} color={colors.white} />
+            <Feather name="pause" size={24} color={colors.white} />
           ) : (
-            <Play size={24} color={colors.white} />
+            <Feather name="play" size={24} color={colors.white} />
           )}
         </TouchableOpacity>
       </View>
@@ -212,7 +213,7 @@ export default function StartWorkoutScreen() {
         ))}
 
         <TouchableOpacity style={styles.addExerciseButton} onPress={addExercise}>
-          <Plus size={20} color={colors.primary} />
+          <Feather name="plus" size={20} color={colors.primary} />
           <Text style={styles.addExerciseText}>Add Exercise</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -237,7 +238,7 @@ export default function StartWorkoutScreen() {
         </View>
 
         <TouchableOpacity style={styles.completeButton} onPress={completeWorkout}>
-          <Save size={20} color={colors.white} />
+          <Feather name="save" size={20} color={colors.white} />
           <Text style={styles.completeButtonText}>Complete Workout</Text>
         </TouchableOpacity>
 
@@ -255,7 +256,7 @@ export default function StartWorkoutScreen() {
               ]);
             }}
           >
-            <Trash2 size={20} color={colors.white} />
+            <Feather name="trash" size={20} color={colors.white} />
             <Text style={styles.deleteButtonText}>Delete Routine</Text>
           </TouchableOpacity>
         )}

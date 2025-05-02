@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Image, Switch, TextInput, Modal } from 'react-native';
-import { Settings, Award, CreditCard as Edit, LogOut, ChartBar as BarChart2, User } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/constants/theme';
 import { UserContext } from '@/context/UserContext';
 import { WorkoutContext } from '@/context/WorkoutContext';
@@ -15,6 +14,9 @@ import { getAuth } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import Slider from '@react-native-community/slider';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+import Feather from '@expo/vector-icons/Feather';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -168,7 +170,7 @@ export default function ProfileScreen() {
             {editMode ? (
               <Text style={styles.doneText}>Done</Text>
             ) : (
-              <Settings size={24} color={colors.text.primary} />
+              <Feather name="settings" size={24} color={colors.text.primary} />
             )}
           </TouchableOpacity>
         </View>
@@ -183,7 +185,7 @@ export default function ProfileScreen() {
                 />
               ) : (
                 <View style={styles.placeholderImage}>
-                  <User size={40} color={colors.text.secondary} />
+                  <Feather name="user" size={40} color={colors.text.secondary} />
                 </View>
               )}
             </View>
@@ -198,7 +200,7 @@ export default function ProfileScreen() {
               {!editMode && (
                 <View style={styles.profileActions}>
                   <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-                    <Edit size={16} color={colors.primary} />
+                    <Feather name="edit" size={16} color={colors.primary} />
                     <Text style={styles.editButtonText}>Edit Profile</Text>
                   </TouchableOpacity>
                   <TouchableOpacity 
@@ -208,7 +210,7 @@ export default function ProfileScreen() {
                       router.replace('/authpage');
                     }}
                   >
-                    <LogOut size={16} color={colors.error} />
+                    <MaterialIcons name="logout" size={16} color={colors.error} />
                     <Text style={styles.signOutButtonText}>Sign Out</Text>
                   </TouchableOpacity>
                 </View>
@@ -234,24 +236,24 @@ export default function ProfileScreen() {
             <StatsCard 
               title="Total Workouts"
               value={totalWorkouts.toString()}
-              icon={<BarChart2 size={24} color={colors.primary} />}
+              icon={<AntDesign name="barschart" size={24} color={colors.primary} />}
             />
             <StatsCard 
               title="This Month"
               value={(totalWorkouts > 0 ? Math.ceil(totalWorkouts * 0.4) : 0).toString()}
-              icon={<BarChart2 size={24} color={colors.accent} />}
+              icon={<AntDesign name="barschart" size={24} color={colors.accent} />}
             />
           </View>
           <View style={styles.statsRow}>
             <StatsCard 
               title="Current Streak"
               value="3 days"
-              icon={<Award size={24} color={colors.success} />}
+              icon={<Feather name="award" size={24} color={colors.success} />}
             />
             <StatsCard 
               title="Avg. Duration"
               value={`${averageWorkoutTime} min`}
-              icon={<BarChart2 size={24} color={colors.info} />}
+              icon={<AntDesign name="barschart" size={24} color={colors.info} />}
             />
           </View>
         </View>

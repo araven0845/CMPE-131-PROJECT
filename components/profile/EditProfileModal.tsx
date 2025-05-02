@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Image, Modal, Pressable } from 'react-native';
-import { X, Plus, Camera, User } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/constants/theme';
 import { EditProfileFormData } from '@/types/user';
 import * as ImagePicker from 'expo-image-picker';
+import Feather from '@expo/vector-icons/Feather';
 
 interface EditProfileModalProps {
   initialData: EditProfileFormData;
@@ -97,7 +97,7 @@ export default function EditProfileModal({
           <View style={styles.header}>
             <Text style={styles.title}>Edit Profile</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={24} color={colors.text.primary} />
+              <Feather name="x" size={24} color={colors.text.primary} />
             </TouchableOpacity>
           </View>
 
@@ -108,11 +108,11 @@ export default function EditProfileModal({
                   <Image source={{ uri: formData.profileImage }} style={styles.profileImage} />
                 ) : (
                   <View style={styles.placeholderImage}>
-                    <User size={40} color={colors.text.secondary} />
+                    <Feather name="user" size={40} color={colors.text.secondary} />
                   </View>
                 )}
                 <View style={styles.cameraButton}>
-                  <Camera size={20} color={colors.white} />
+                  <Feather name="camera" size={20} color={colors.white} />
                 </View>
               </TouchableOpacity>
             </View>
@@ -213,7 +213,7 @@ export default function EditProfileModal({
                       onPress={() => handleRemoveGoal(index)}
                       style={styles.removeGoalButton}
                     >
-                      <X size={16} color={colors.error} />
+                      <Feather name="x" size={16} color={colors.error} />
                     </TouchableOpacity>
                   </View>
                 ))}
@@ -229,7 +229,7 @@ export default function EditProfileModal({
                   style={styles.addGoalButton}
                   onPress={handleAddGoal}
                 >
-                  <Plus size={20} color={colors.white} />
+                  <Feather name="plus" size={20} color={colors.white} />
                 </TouchableOpacity>
               </View>
             </View>

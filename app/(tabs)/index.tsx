@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
-import { Search, Calendar } from 'lucide-react-native';
 import { WorkoutContext } from '@/context/WorkoutContext';
 import WorkoutCard from '@/components/home/WorkoutCard';
 import ProgressMetrics from '@/components/home/ProgressMetrics';
 import { useRouter } from 'expo-router';
 import { WorkoutSummary } from '@/types/workout';
 import { colors, spacing, typography } from '@/constants/theme';
+import Feather from '@expo/vector-icons/Feather';
 
 export default function HomeScreen() {
   const { workoutHistory } = useContext(WorkoutContext);
@@ -26,7 +26,7 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <Text style={styles.title}>Workout History</Text>
         <View style={styles.searchContainer}>
-          <Search size={20} color={colors.text.secondary} style={styles.searchIcon} />
+          <Feather name="search" size={20} color={colors.text.secondary} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search Workouts"
@@ -43,7 +43,7 @@ export default function HomeScreen() {
         <View style={styles.historyHeader}>
           <Text style={styles.sectionTitle}>Recent Workouts</Text>
           <TouchableOpacity style={styles.calendarButton}>
-            <Calendar size={20} color={colors.primary} />
+            <Feather name="calendar" size={20} color={colors.primary} />
           </TouchableOpacity>
         </View>
 

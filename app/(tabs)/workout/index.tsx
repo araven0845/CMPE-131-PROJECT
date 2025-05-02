@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
-import { Play, Plus } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import { colors, spacing, typography } from '@/constants/theme';
 import RoutineCard from '@/components/workout/RoutineCard';
 import { useWorkout } from '@/context/WorkoutContext';
+import Feather from '@expo/vector-icons/Feather';
 
 export default function WorkoutScreen() {
   const router = useRouter();
@@ -53,7 +53,7 @@ export default function WorkoutScreen() {
             style={styles.createButton}
             onPress={() => router.push('/workout/create-routine')}
           >
-            <Plus size={24} color={colors.white} />
+            <Feather name="plus" size={24} color={colors.white} />
             <Text style={styles.createButtonText}>Create New Routine</Text>
           </TouchableOpacity>
         </View>
@@ -64,7 +64,7 @@ export default function WorkoutScreen() {
             style={styles.quickStartButton}
             onPress={() => router.push('/workout/start-workout')}
           >
-            <Play size={24} color={colors.white} />
+            <Feather name="play" size={24} color={colors.white} />
             <Text style={styles.quickStartText}>Start Empty Workout</Text>
           </TouchableOpacity>
         </View>

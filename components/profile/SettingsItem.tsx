@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextStyle } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/constants/theme';
+import Feather from '@expo/vector-icons/Feather';
 
 interface SettingsItemProps {
   label: string;
@@ -39,7 +39,7 @@ export default function SettingsItem({
           {control}
         </View>
       ) : onPress ? (
-        <ChevronRight size={20} color={colors.text.secondary} />
+        <Feather name="chevron-right" size={20} color={colors.text.secondary} />
       ) : null}
     </Container>
   );

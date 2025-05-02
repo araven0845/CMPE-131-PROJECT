@@ -7,6 +7,7 @@ import { Inter_400Regular, Inter_600SemiBold, Inter_800ExtraBold } from '@expo-g
 import { SplashScreen } from 'expo-router';
 import { WorkoutProvider } from '@/context/WorkoutContext';
 import { UserProvider } from '@/context/UserContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -35,12 +36,14 @@ export default function RootLayout() {
   return (
     <UserProvider>
       <WorkoutProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="workout-details/[id]" options={{ presentation: 'card' }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
+        <SafeAreaView style={{ flex: 1, paddingTop: 20 }}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="workout-details/[id]" options={{ presentation: 'card' }} />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </SafeAreaView>
       </WorkoutProvider>
     </UserProvider>
   );

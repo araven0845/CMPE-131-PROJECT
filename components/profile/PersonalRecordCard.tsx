@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Award } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/constants/theme';
 import { formatDate } from '@/utils/timeUtils';
+import Feather from '@expo/vector-icons/Feather';
 
 interface PersonalRecord {
   id: string;
@@ -19,7 +19,7 @@ export default function PersonalRecordCard({ record }: PersonalRecordCardProps) 
   return (
     <View style={styles.card}>
       <View style={styles.iconContainer}>
-        <Award size={24} color={colors.accent} />
+        <Feather name="award" size={24} color={colors.accent} />
       </View>
       
       <View style={styles.contentContainer}>

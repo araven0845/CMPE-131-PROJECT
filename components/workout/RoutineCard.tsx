@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Play, Dumbbell } from 'lucide-react-native';
 import { WorkoutRoutine } from '@/types/workout';
 import { colors, spacing, typography } from '@/constants/theme';
 import { formatDate } from '@/utils/timeUtils';
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 interface RoutineCardProps {
   routine: WorkoutRoutine;
@@ -17,7 +18,7 @@ export default function RoutineCard({ routine, onPress }: RoutineCardProps) {
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={styles.contentContainer}>
         <View style={styles.iconContainer}>
-          <Dumbbell size={24} color={colors.white} />
+          <FontAwesome5 name="dumbbell" size={24} color={colors.white} />
         </View>
         
         <View style={styles.textContainer}>
@@ -29,7 +30,7 @@ export default function RoutineCard({ routine, onPress }: RoutineCardProps) {
       
       <View style={styles.startButtonContainer}>
         <TouchableOpacity style={styles.startButton} onPress={onPress}>
-          <Play size={20} color={colors.white} />
+          <Feather name="play" size={20} color={colors.white} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

@@ -1,11 +1,12 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Dumbbell, User } from 'lucide-react-native';
 import { Platform, StyleSheet } from 'react-native';
 import { colors } from '@/constants/theme';
 import { useContext, useEffect } from 'react';
 import { UserContext } from '@/context/UserContext';
 import { useRouter } from 'expo-router';
 import { auth } from '@/FirebaseConfig';
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 export default function TabLayout() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Home size={size} color={color} />
+            <Feather name="home" size={size} color={color} />
           ),
           tabBarLabelStyle: styles.tabBarLabel,
         }}
@@ -44,7 +45,7 @@ export default function TabLayout() {
         options={{
           title: 'Workout',
           tabBarIcon: ({ color, size }) => (
-            <Dumbbell size={size} color={color} />
+            <FontAwesome5 name="dumbbell" size={size} color={color} />
           ),
           tabBarLabelStyle: styles.tabBarLabel,
         }}
@@ -54,7 +55,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <User size={size} color={color} />
+            <Feather name="user" size={size} color={color} />
           ),
           tabBarLabelStyle: styles.tabBarLabel,
         }}

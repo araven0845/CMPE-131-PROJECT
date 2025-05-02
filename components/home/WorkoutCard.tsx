@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { Clock, Dumbbell, CircleCheck as CheckCircle } from 'lucide-react-native';
 import { WorkoutSummary } from '@/types/workout';
 import { colors, spacing, typography } from '@/constants/theme';
 import { formatDate, formatDuration } from '@/utils/timeUtils';
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 interface WorkoutCardProps {
   workout: WorkoutSummary;
@@ -21,17 +22,17 @@ export default function WorkoutCard({ workout }: WorkoutCardProps) {
 
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
-          <Clock size={16} color={colors.text.secondary} />
+          <Feather name="clock" size={16} color={colors.text.secondary} />
           <Text style={styles.statText}>{formatDuration(workout.duration)}</Text>
         </View>
         
         <View style={styles.statItem}>
-          <Dumbbell size={16} color={colors.text.secondary} />
+          <FontAwesome5 name="dumbbell" size={16} color={colors.text.secondary} />
           <Text style={styles.statText}>{workout.exercises.length} exercises</Text>
         </View>
         
         <View style={styles.statItem}>
-          <CheckCircle size={16} color={colors.text.secondary} />
+          <Feather name="check-circle" size={16} color={colors.text.secondary} />
           <Text style={styles.statText}>
             {workout.completedSets}/{workout.totalSets} sets
           </Text>

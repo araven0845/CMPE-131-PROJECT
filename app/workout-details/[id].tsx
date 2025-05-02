@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Clock, Calendar, Dumbbell } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/constants/theme';
 import { WorkoutContext } from '@/context/WorkoutContext';
 import { formatDate, formatDuration } from '@/utils/timeUtils';
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function WorkoutDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,7 +20,7 @@ export default function WorkoutDetailsScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <ArrowLeft size={24} color={colors.text.primary} />
+            <AntDesign name="arrowleft" size={24} color={colors.text.primary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Workout Not Found</Text>
         </View>
@@ -39,7 +41,7 @@ export default function WorkoutDetailsScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <ArrowLeft size={24} color={colors.text.primary} />
+          <AntDesign name="arrowleft" size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{workout.name}</Text>
       </View>
@@ -47,7 +49,7 @@ export default function WorkoutDetailsScreen() {
       <ScrollView style={styles.content}>
         <View style={styles.overviewCard}>
           <View style={styles.overviewItem}>
-            <Calendar size={20} color={colors.primary} />
+            <Feather name="calendar" size={20} color={colors.primary} />
             <Text style={styles.overviewValue}>{formatDate(workout.date)}</Text>
             <Text style={styles.overviewLabel}>Date</Text>
           </View>
@@ -55,7 +57,7 @@ export default function WorkoutDetailsScreen() {
           <View style={styles.overviewDivider} />
           
           <View style={styles.overviewItem}>
-            <Clock size={20} color={colors.primary} />
+            <Feather name="clock" size={20} color={colors.primary} />
             <Text style={styles.overviewValue}>{formatDuration(workout.duration)}</Text>
             <Text style={styles.overviewLabel}>Duration</Text>
           </View>
@@ -63,7 +65,7 @@ export default function WorkoutDetailsScreen() {
           <View style={styles.overviewDivider} />
           
           <View style={styles.overviewItem}>
-            <Dumbbell size={20} color={colors.primary} />
+            <FontAwesome5 name="dumbbell" size={20} color={colors.primary} />
             <Text style={styles.overviewValue}>{workout.exercises.length}</Text>
             <Text style={styles.overviewLabel}>Exercises</Text>
           </View>

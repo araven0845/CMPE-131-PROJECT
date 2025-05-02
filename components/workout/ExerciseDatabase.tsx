@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
-import { Search, X, Filter } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/constants/theme';
 import { exerciseDatabase } from '@/data/initialData';
+import Feather from '@expo/vector-icons/Feather';
 
 interface ExerciseDatabaseProps {
   onSelectExercise: (exerciseName: string) => void;
@@ -41,12 +41,12 @@ export default function ExerciseDatabase({
       <View style={styles.header}>
         <Text style={styles.title}>Exercise Database</Text>
         <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <X size={24} color={colors.text.primary} />
+          <Feather name="x" size={24} color={colors.text.primary} />
         </TouchableOpacity>
       </View>
       
       <View style={styles.searchContainer}>
-        <Search size={20} color={colors.text.secondary} style={styles.searchIcon} />
+        <Feather name="search" size={20} color={colors.text.secondary} style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search exercises"
@@ -56,14 +56,14 @@ export default function ExerciseDatabase({
         />
         {searchQuery ? (
           <TouchableOpacity onPress={() => onSearchChange('')}>
-            <X size={20} color={colors.text.secondary} />
+            <Feather name="x" size={20} color={colors.text.secondary} />
           </TouchableOpacity>
         ) : null}
       </View>
       
       <View style={styles.filterContainer}>
         <View style={styles.filterHeaderRow}>
-          <Filter size={16} color={colors.text.secondary} />
+          <Feather name="filter" size={16} color={colors.text.secondary} />
           <Text style={styles.filterHeaderText}>Filter by category</Text>
         </View>
         

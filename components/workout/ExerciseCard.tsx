@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { Trash2, Plus } from 'lucide-react-native';
 import { WorkoutExercise, ExerciseSet } from '@/types/workout';
 import { colors, spacing, typography } from '@/constants/theme';
+import Feather from '@expo/vector-icons/Feather';
 
 interface ExerciseCardProps {
   exercise: WorkoutExercise;
@@ -32,7 +32,7 @@ export default function ExerciseCard({
           placeholderTextColor={colors.text.secondary}
         />
         <TouchableOpacity style={styles.removeButton} onPress={onRemove}>
-          <Trash2 size={20} color={colors.error} />
+          <Feather name="trash" size={20} color={colors.error} />
         </TouchableOpacity>
       </View>
       <View style={styles.setsContainer}>
@@ -73,7 +73,7 @@ export default function ExerciseCard({
           </View>
         ))}
         <TouchableOpacity style={styles.addSetButton} onPress={onAddSet}>
-          <Plus size={20} color={colors.primary} />
+          <Feather name="plus" size={20} color={colors.primary} />
           <Text style={styles.addSetButtonText}>Add Set</Text>
         </TouchableOpacity>
       </View>

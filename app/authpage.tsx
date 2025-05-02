@@ -5,7 +5,7 @@ import { colors, spacing, typography } from '@/constants/theme';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@firebase/auth';
 import { auth } from '@/FirebaseConfig';
 import { useRouter } from 'expo-router';
-import { Eye, EyeOff, Home } from 'lucide-react-native';
+import Feather from '@expo/vector-icons/Feather';
 
 export default function AuthScreen() {
   const router = useRouter();
@@ -63,7 +63,7 @@ return (
     onPress={handleHomePress}
   >
     <View style={styles.homeButtonContent}>
-      <Home size={24} color={colors.text.primary} />
+      <Feather name="home" size={24} color={colors.text.primary} />
       <Text style={styles.homeButtonText}>Back to Home</Text>
     </View>
   </TouchableOpacity>
@@ -93,9 +93,9 @@ return (
         onPress={() => setShowPassword(!showPassword)}
       >
         {showPassword ? (
-          <Eye size={24} color={colors.text.secondary} />
+          <Feather name="eye" size={24} color={colors.text.secondary} />
         ) : (
-          <EyeOff size={24} color={colors.text.secondary} />
+          <Feather name="eye-off" size={24} color={colors.text.secondary} />
         )}
       </TouchableOpacity>
     </View>

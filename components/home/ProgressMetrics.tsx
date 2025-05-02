@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { Award, Calendar, Dumbbell } from 'lucide-react-native';
 import { WorkoutSummary } from '@/types/workout';
 import { colors, spacing, typography } from '@/constants/theme';
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 interface ProgressMetricsProps {
   workouts: WorkoutSummary[];
@@ -66,7 +67,7 @@ export default function ProgressMetrics({ workouts }: ProgressMetricsProps) {
       >
         <View style={styles.metricItem}>
           <View style={[styles.iconContainer, { backgroundColor: 'rgba(59, 130, 246, 0.1)' }]}>
-            <Calendar size={24} color={colors.primary} />
+            <Feather name="calendar" size={24} color={colors.primary} />
           </View>
           <View style={styles.metricContent}>
             <Text style={styles.metricValue}>{metrics.workoutsThisWeek}</Text>
@@ -76,7 +77,7 @@ export default function ProgressMetrics({ workouts }: ProgressMetricsProps) {
         
         <View style={styles.metricItem}>
           <View style={[styles.iconContainer, { backgroundColor: 'rgba(249, 115, 22, 0.1)' }]}>
-            <Dumbbell size={24} color={colors.accent} />
+            <FontAwesome5 name="dumbbell" size={24} color={colors.accent} />
           </View>
           <View style={styles.metricContent}>
             <Text style={styles.metricValue}>{metrics.workoutsThisMonth}</Text>
@@ -86,7 +87,7 @@ export default function ProgressMetrics({ workouts }: ProgressMetricsProps) {
         
         <View style={styles.metricItem}>
           <View style={[styles.iconContainer, { backgroundColor: 'rgba(16, 185, 129, 0.1)' }]}>
-            <Award size={24} color={colors.success} />
+            <Feather name="award" size={24} color={colors.success} />
           </View>
           <View style={styles.metricContent}>
             <Text style={styles.metricValue}>{metrics.streak}</Text>

@@ -1,12 +1,13 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Save, Plus, X, ArrowLeft, Search } from 'lucide-react-native';
 import { colors, spacing, typography } from '@/constants/theme';
 import { WorkoutContext } from '@/context/WorkoutContext';
 import { WorkoutExercise, WorkoutRoutine } from '@/types/workout';
 import { generateUniqueId } from '@/utils/idUtils';
 import ExerciseDatabase from '@/components/workout/ExerciseDatabase';
+import Feather from '@expo/vector-icons/Feather';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function CreateRoutineScreen() {
   const { addRoutine } = useContext(WorkoutContext);
@@ -104,7 +105,7 @@ export default function CreateRoutineScreen() {
           style={styles.backButton} 
           onPress={() => router.back()}
         >
-          <ArrowLeft size={24} color={colors.text.primary} />
+          <AntDesign name="arrowleft" size={24} color={colors.text.primary} />
         </TouchableOpacity>
         <TextInput
           style={styles.routineNameInput}
@@ -117,7 +118,7 @@ export default function CreateRoutineScreen() {
           style={styles.saveButton} 
           onPress={saveRoutine}
         >
-          <Save size={24} color={colors.primary} />
+          <Feather name="save" size={24} color={colors.primary} />
         </TouchableOpacity>
       </View>
 
@@ -138,7 +139,7 @@ export default function CreateRoutineScreen() {
                     style={styles.removeButton}
                     onPress={() => removeExercise(exercise.id)}
                   >
-                    <X size={20} color={colors.error} />
+                    <Feather name="x" size={20} color={colors.error} />
                   </TouchableOpacity>
                 </View>
 
@@ -204,7 +205,7 @@ export default function CreateRoutineScreen() {
                 style={styles.addButton}
                 onPress={addEmptyExercise}
               >
-                <Plus size={20} color={colors.white} />
+                <Feather name="plus" size={20} color={colors.white} />
                 <Text style={styles.addButtonText}>Add Custom Exercise</Text>
               </TouchableOpacity>
               
@@ -212,7 +213,7 @@ export default function CreateRoutineScreen() {
                 style={[styles.addButton, styles.browseButton]}
                 onPress={() => setShowExerciseDatabase(true)}
               >
-                <Search size={20} color={colors.white} />
+                <Feather name="search" size={20} color={colors.white} />
                 <Text style={styles.addButtonText}>Browse Exercise Database</Text>
               </TouchableOpacity>
             </View>
@@ -223,7 +224,7 @@ export default function CreateRoutineScreen() {
               style={styles.saveRoutineButton}
               onPress={saveRoutine}
             >
-              <Save size={20} color={colors.white} />
+              <Feather name="save" size={20} color={colors.white} />
               <Text style={styles.saveRoutineText}>Save Routine</Text>
             </TouchableOpacity>
           </View>
