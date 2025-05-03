@@ -7,20 +7,13 @@ import { useRouter } from 'expo-router';
 import { auth } from '@/FirebaseConfig';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function TabLayout() {
   const router = useRouter();
-  const { user } = useContext(UserContext);
+  const { user, loading } = useContext(UserContext); // Get loading state too
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
-      if (!user && !firebaseUser) {
-        router.replace('/authpage');
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  // Remove the onAuthStateChanged hook from here since it's redundant with UserContext
 
   return (
     <Tabs
@@ -59,14 +52,7 @@ export default function TabLayout() {
           ),
           tabBarLabelStyle: styles.tabBarLabel,
         }}
-        listeners={{
-          tabPress: (e) => {
-            if (!user) {
-              e.preventDefault();
-              router.push('/authpage');
-            }
-          },
-        }}
+        // Remove the listeners prop that was redirecting to auth screen
       />
     </Tabs>
   );

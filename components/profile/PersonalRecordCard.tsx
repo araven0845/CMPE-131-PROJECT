@@ -24,7 +24,9 @@ export default function PersonalRecordCard({ record }: PersonalRecordCardProps) 
       
       <View style={styles.contentContainer}>
         <Text style={styles.title}>{record.name}</Text>
-        <Text style={styles.date}>{formatDate(record.date)}</Text>
+        <Text style={styles.date}>
+          {record.date ? formatDate(record.date) : "-"}
+        </Text>
       </View>
       
       <Text style={styles.value}>{record.value}</Text>

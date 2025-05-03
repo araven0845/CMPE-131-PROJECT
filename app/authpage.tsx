@@ -2,10 +2,12 @@ import { useFocusEffect } from '@react-navigation/native';
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity } from 'react-native';
 import { colors, spacing, typography } from '@/constants/theme';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@firebase/auth';
-import { auth } from '@/FirebaseConfig';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'; // Correct import
+import { auth, db } from '@/FirebaseConfig'; // Import db
+import { doc, setDoc } from 'firebase/firestore'; // Import Firestore functions
 import { useRouter } from 'expo-router';
 import Feather from '@expo/vector-icons/Feather';
+import { initialUser } from '@/data/initialData'; // Import initial user data for defaults
 
 export default function AuthScreen() {
   const router = useRouter();
@@ -13,30 +15,57 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const signin = async () => {
     try {
-      const user = await signInWithEmailAndPassword(auth, email, password);
-      if (user) router.replace('/(tabs)');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      if (userCredential.user) router.replace('/(tabs)');
     } catch (error: any) {
-      console.error(error);
-      if (error.code === 'auth/wrong-password') {
-        alert('Incorrect password. Please try again.');
+      console.error("Signin error:", error);
+      if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+         alert('Incorrect email or password. Please try again.');
       } else {
-        alert('Sign in failed');
+         alert('Sign in failed. Please try again later.');
       }
     }
   };
-  
+
   const signup = async () => {
     try {
-      const user = await createUserWithEmailAndPassword(auth, email, password);
-      if (user) router.replace('/(tabs)');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const newUser = userCredential.user;
+      if (newUser) {
+        // *** Create user document in Firestore ***
+        const userDocRef = doc(db, 'users', newUser.uid);
+        const initialUserDataForFirestore = {
+          // Spread initial defaults, but override critical fields
+          ...initialUser,
+          id: newUser.uid, // Ensure ID matches auth UID
+          email: newUser.email || '', // Use email from auth
+          name: newUser.email?.split('@')[0] || 'New User', // Default name from email
+          // Keep other initialUser fields like preferences, bio, goals etc.
+        };
+        // Remove id from the object being saved, as it's the document key
+        delete (initialUserDataForFirestore as any).id;
+
+        await setDoc(userDocRef, initialUserDataForFirestore);
+        console.log("User document created in Firestore for UID:", newUser.uid);
+        // *** End Firestore document creation ***
+
+        router.replace('/(tabs)'); // Navigate after successful signup and doc creation
+      }
     } catch (error: any) {
-      console.error(error);
-      alert('Sign in failed: ' + error.message);
+      console.error("Signup error:", error);
+      if (error.code === 'auth/email-already-in-use') {
+        alert('This email address is already in use.');
+      } else if (error.code === 'auth/weak-password') {
+        alert('Password should be at least 6 characters.');
+      } else {
+        alert('Sign up failed: ' + error.message);
+      }
     }
   };
+
   const handleAuth = () => {
       if (isLogin) {
         signin();

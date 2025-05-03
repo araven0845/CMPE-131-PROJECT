@@ -9,17 +9,39 @@ import SettingsItem from '@/components/profile/SettingsItem';
 import EditProfileModal from '@/components/profile/EditProfileModal';
 import { EditProfileFormData } from '@/types/user';
 import { useEffect } from 'react';
-import { auth } from '@/FirebaseConfig';
+import { auth, db } from '@/FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { useRouter } from 'expo-router';
 import Slider from '@react-native-community/slider';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import Feather from '@expo/vector-icons/Feather';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { user, updateUser, updateUserPreference, loading } = useContext(UserContext);
+  const { workoutHistory, personalRecords } = useContext(WorkoutContext);
+  const [editMode, setEditMode] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+
+  // Use a default value or conditional to handle potential null user
+  const [showRestTimerModal, setShowRestTimerModal] = useState(false);
+  const [selectedRestTime, setSelectedRestTime] = useState(
+    user?.preferences?.defaultRestTime || 60
+  );
+
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
+  // Update selectedRestTime when user data loads
+  useEffect(() => {
+    if (user?.preferences?.defaultRestTime) {
+      setSelectedRestTime(user.preferences.defaultRestTime);
+    }
+  }, [user?.preferences?.defaultRestTime]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -30,42 +52,27 @@ export default function ProfileScreen() {
     return () => unsubscribe();
   }, []);
 
-  const { user, updateUser, updateUserPreference } = useContext(UserContext);
-  const { workoutHistory } = useContext(WorkoutContext);
-  const [editMode, setEditMode] = useState(false);
-  const [showEditProfile, setShowEditProfile] = useState(false);
-
-  // NEW: State for the rest timer modal
-  const [showRestTimerModal, setShowRestTimerModal] = useState(false);
-  const [selectedRestTime, setSelectedRestTime] = useState(user.preferences.defaultRestTime);
-
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-
-  const totalWorkouts = workoutHistory.length;
-  const totalWorkoutTime = workoutHistory.reduce((sum, workout) => sum + (workout.duration || 0), 0);
-  const averageWorkoutTime = totalWorkouts > 0 ? Math.floor(totalWorkoutTime / totalWorkouts) : 0;
-  
-  const strengthRecords = [
-    { id: '1', name: 'Bench Press', value: '95 kg', date: '2023-11-15' },
-    { id: '2', name: 'Squat', value: '140 kg', date: '2023-10-28' },
-    { id: '3', name: 'Deadlift', value: '160 kg', date: '2023-12-02' },
-  ];
+  // Use this effect to check authentication
+  useEffect(() => {
+    // Only redirect if not loading and no user
+    if (!loading && !user) {
+      router.replace('/authpage');
+    }
+  }, [user, loading]);
 
   const toggleUnitPreference = () => {
-    const newUseMetric = !user.preferences.useMetric;
-    let newHeight = user.height;
-    let newWeight = user.weight;
+    const newUseMetric = user ? !user.preferences.useMetric : false;
+    let newHeight = user?.height ?? 0;
+    let newWeight = user?.weight ?? 0;
 
     if (newUseMetric) {
       // Converting from Imperial (inches, lbs) to Metric (cm, kg)
-      newHeight = Math.round((user.height ?? 0) * 2.54);
-      newWeight = Math.round((user.weight ?? 0) / 2.20462);
+      newHeight = Math.round(((user?.height ?? 0) * 2.54));
+      newWeight = Math.round(((user?.weight ?? 0) / 2.20462));
     } else {
       // Converting from Metric to Imperial
-      newHeight = Math.round((user.height ?? 0) / 2.54);
-      newWeight = Math.round((user.weight ?? 0) * 2.20462);
+      newHeight = Math.round((user?.height ?? 0) / 2.54);
+      newWeight = Math.round((user?.weight ?? 0) * 2.20462);
     }
 
     // Update both the user's height/weight and the metric preference
@@ -74,7 +81,9 @@ export default function ProfileScreen() {
   };
 
   const toggleNotifications = () => {
-    updateUserPreference('notifications', !user.preferences.notifications);
+    if (user) {
+      updateUserPreference('notifications', !user.preferences.notifications);
+    }
   };
 
   const handleEditProfile = () => {
@@ -89,6 +98,7 @@ export default function ProfileScreen() {
       goals: data.goals,
       height: data.height,
       weight: data.weight,
+      // Use null instead of undefined if no profile image
       profileImage: data.profileImage,
     });
     setShowEditProfile(false);
@@ -127,8 +137,61 @@ export default function ProfileScreen() {
     }
   };
 
+  // Show loading state while user data is loading
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Text>Loading profile...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // If not loading and no user, redirect happens in the effect above
+  // But still return null until the redirect happens
   if (!user) return null;
 
+  // Calculate workout statistics from workoutHistory
+  const totalWorkouts = workoutHistory.length;
+  const totalWorkoutTime = workoutHistory.reduce((sum, workout) => sum + (workout.duration || 0), 0);
+  const averageWorkoutTime = totalWorkouts > 0 ? Math.floor(totalWorkoutTime / totalWorkouts / 60) : 0;
+  
+  // Calculate current streak
+  const calculateStreak = () => {
+    if (workoutHistory.length === 0) return 0;
+    
+    const DAY_IN_MS = 24 * 60 * 60 * 1000;
+    // Get current date at midnight for consistent comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayMs = today.getTime();
+    
+    // Create a set of days with workouts
+    const workoutDays = new Set();
+    workoutHistory.forEach(workout => {
+      const date = new Date(workout.date);
+      date.setHours(0, 0, 0, 0);
+      workoutDays.add(date.getTime());
+    });
+    
+    // Count consecutive days with workouts, starting from today and going backwards
+    let streak = 0;
+    for (let i = 0; i < 60; i++) { // Check up to 60 days back
+      const checkDate = new Date(todayMs - i * DAY_IN_MS);
+      if (workoutDays.has(checkDate.getTime())) {
+        streak++;
+      } else if (streak > 0) {
+        // Break once the streak is broken
+        break;
+      }
+    }
+    
+    return streak;
+  };
+  
+  const currentStreak = calculateStreak();
+  
   const formatHeight = (height: number): string => {
     // Assume height is stored in inches when using Imperial
     const feet = Math.floor(height / 12);
@@ -148,12 +211,32 @@ export default function ProfileScreen() {
       : `${user.weight} lbs`
     : '';
 
-  // Convert personal records if switching to Imperial (lbs)
-  const displayedStrengthRecords = strengthRecords.map(record => {
-    if (!user.preferences.useMetric) {
-      const kg = parseFloat(record.value); // value comes as e.g. "95 kg"
-      const lbs = Math.round(kg * 2.20462);
-      return { ...record, value: `${lbs} lbs` };
+  // Convert personal records based on unit preference
+  const displayedStrengthRecords = personalRecords.map(record => {
+    // Handle zero values based on user's unit preference
+    if (record.value === '0 kg' || record.value === '0 lbs') {
+      return { 
+        ...record, 
+        value: user.preferences.useMetric ? '0 kg' : '0 lbs' 
+      };
+    }
+    
+    // Handle non-zero values
+    if (!user.preferences.useMetric && record.value.includes('kg')) {
+      const match = record.value.match(/(\d+(\.\d+)?)\s*kg/);
+      if (match) {
+        const kg = parseFloat(match[1]); 
+        const lbs = Math.round(kg * 2.20462);
+        return { ...record, value: `${lbs} lbs` };
+      }
+    }
+    else if (user.preferences.useMetric && record.value.includes('lbs')) {
+      const match = record.value.match(/(\d+(\.\d+)?)\s*lbs/);
+      if (match) {
+        const lbs = parseFloat(match[1]);
+        const kg = Math.round(lbs / 2.20462);
+        return { ...record, value: `${kg} kg` };
+      }
     }
     return record;
   });
@@ -240,14 +323,19 @@ export default function ProfileScreen() {
             />
             <StatsCard 
               title="This Month"
-              value={(totalWorkouts > 0 ? Math.ceil(totalWorkouts * 0.4) : 0).toString()}
+              value={workoutHistory.filter(workout => {
+                const workoutDate = new Date(workout.date);
+                const now = new Date();
+                return workoutDate.getMonth() === now.getMonth() && 
+                      workoutDate.getFullYear() === now.getFullYear();
+              }).length.toString()}
               icon={<AntDesign name="barschart" size={24} color={colors.accent} />}
             />
           </View>
           <View style={styles.statsRow}>
             <StatsCard 
               title="Current Streak"
-              value="3 days"
+              value={`${currentStreak} ${currentStreak === 1 ? 'day' : 'days'}`}
               icon={<Feather name="award" size={24} color={colors.success} />}
             />
             <StatsCard 
@@ -364,18 +452,41 @@ export default function ProfileScreen() {
           <View style={modalStyles.overlay}>
             <View style={modalStyles.modalContainer}>
               <Text style={modalStyles.title}>Select Default Rest Timer</Text>
+              
+              {/* Text input for direct entry */}
+              <View style={modalStyles.inputContainer}>
+                <TextInput
+                  style={modalStyles.timerInput}
+                  value={selectedRestTime.toString()}
+                  onChangeText={(text) => {
+                    const value = parseInt(text);
+                    if (!isNaN(value)) {
+                      // Clamp value between 5 and 600 seconds (10 minutes)
+                      setSelectedRestTime(Math.min(Math.max(value, 5), 600));
+                    }
+                  }}
+                  keyboardType="number-pad"
+                  placeholder="Enter seconds"
+                />
+                <Text style={modalStyles.inputLabel}>seconds</Text>
+              </View>
+              
               <Slider
                 minimumValue={5}
-                maximumValue={300}
+                maximumValue={600} // Increased to 10 minutes (600 seconds)
                 step={5}
                 value={selectedRestTime}
                 onValueChange={setSelectedRestTime}
                 minimumTrackTintColor={colors.primary}
                 maximumTrackTintColor={colors.border}
                 thumbTintColor={colors.primary}
-                style={{ width: '90%', height: 40 }}
+                style={{ width: '90%', height: 40, marginVertical: spacing.medium }}
               />
-              <Text style={modalStyles.timerText}>{selectedRestTime} seconds</Text>
+              
+              <Text style={modalStyles.timerText}>
+                {selectedRestTime} seconds ({Math.floor(selectedRestTime / 60)}:{(selectedRestTime % 60).toString().padStart(2, '0')})
+              </Text>
+              
               <TouchableOpacity
                 style={modalStyles.confirmButton}
                 onPress={() => {
@@ -476,6 +587,27 @@ const modalStyles = StyleSheet.create({
   cancelText: {
     ...typography.body,
     color: colors.error,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.medium,
+    width: '100%',
+  },
+  timerInput: {
+    ...typography.body,
+    backgroundColor: colors.card,
+    flex: 1,
+    padding: spacing.medium,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    textAlign: 'center',
+  },
+  inputLabel: {
+    ...typography.body,
+    marginLeft: spacing.medium,
+    color: colors.text.secondary,
   },
 });
 
