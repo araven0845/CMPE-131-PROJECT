@@ -4,9 +4,12 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { View } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { UserProvider } from '@/context/UserContext';
+import { WorkoutProvider } from '@/context/WorkoutContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -50,10 +53,16 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+      <UserProvider>
+        <WorkoutProvider>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="authpage" options={{ headerShown: false }} />
+            <Stack.Screen name="workout-details/[id]" options={{ headerShown: false }} />
+          </Stack>
+        </WorkoutProvider>
+      </UserProvider>
     </ThemeProvider>
   );
 }
