@@ -69,6 +69,14 @@ export default function EditProfileModal({
     }
   };
 
+  const handleRemoveProfilePicture = () => {
+    // Use undefined as the type doesn't allow null
+    setFormData({
+      ...formData,
+      profileImage: ""
+    });
+  };
+
   const handleSave = () => {
     let newHeight = formData.height || 0;
     let newWeight = formData.weight || 0;
@@ -81,7 +89,13 @@ export default function EditProfileModal({
     }
     // In metric mode, formData.height is assumed entered in cm and weight in kg
 
-    onSave({ ...formData, height: newHeight, weight: newWeight });
+    // Make sure profileImage: null is preserved when passed to parent
+    onSave({ 
+      ...formData, 
+      height: newHeight, 
+      weight: newWeight,
+      profileImage: formData.profileImage  // Explicitly include this to ensure null is passed
+    });
   };
 
   return (
@@ -105,7 +119,15 @@ export default function EditProfileModal({
             <View style={styles.imageSection}>
               <TouchableOpacity style={styles.imageContainer} onPress={handleImageSelect}>
                 {formData.profileImage ? (
-                  <Image source={{ uri: formData.profileImage }} style={styles.profileImage} />
+                  <View>
+                    <Image source={{ uri: formData.profileImage }} style={styles.profileImage} />
+                    <TouchableOpacity 
+                      style={styles.removeImageButton}
+                      onPress={handleRemoveProfilePicture}
+                    >
+                      <Feather name="trash-2" size={18} color={colors.white} />
+                    </TouchableOpacity>
+                  </View>
                 ) : (
                   <View style={styles.placeholderImage}>
                     <Feather name="user" size={40} color={colors.text.secondary} />
@@ -424,5 +446,19 @@ const styles = StyleSheet.create({
   saveButtonText: {
     ...typography.button,
     color: colors.white,
+  },
+  removeImageButton: {
+    backgroundColor: colors.error,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    borderWidth: 3,
+    borderColor: colors.white,
+    elevation: 3,
   },
 });
