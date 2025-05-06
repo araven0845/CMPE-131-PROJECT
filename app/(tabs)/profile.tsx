@@ -28,9 +28,33 @@ export default function ProfileScreen() {
 
   // Use a default value or conditional to handle potential null user
   const [showRestTimerModal, setShowRestTimerModal] = useState(false);
-  const [selectedRestTime, setSelectedRestTime] = useState(
-    user?.preferences?.defaultRestTime || 60
+  const [restTimeSeconds, setRestTimeSeconds] = useState(
+    (user?.preferences?.defaultRestTime || 0).toString()
   );
+
+  const handleRestTimeChange = (text: string) => {
+    // Allow empty string during typing
+    setRestTimeSeconds(text);
+  };
+
+  const handleSave = () => {
+    // Convert empty string to 0, otherwise parse the number (with 0 fallback)
+    const parsedRestTime = restTimeSeconds === '' ? 0 : parseInt(restTimeSeconds, 10) || 0;
+    
+    // Update preferences in user data with the parsed value
+    if (user) {
+      updateUser({
+        ...user,
+        preferences: {
+          ...user.preferences,
+          defaultRestTime: parsedRestTime,
+          // other preference fields...
+        }
+      });
+    }
+    
+    setShowRestTimerModal(false); // Close the modal when done
+  };
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -39,7 +63,7 @@ export default function ProfileScreen() {
   // Update selectedRestTime when user data loads
   useEffect(() => {
     if (user?.preferences?.defaultRestTime) {
-      setSelectedRestTime(user.preferences.defaultRestTime);
+      setRestTimeSeconds(user.preferences.defaultRestTime.toString());
     }
   }, [user?.preferences?.defaultRestTime]);
 
@@ -391,7 +415,7 @@ export default function ProfileScreen() {
                 description={`${user.preferences.defaultRestTime} seconds`}
                 onPress={() => {
                   // Reset to current default before opening modal
-                  setSelectedRestTime(user.preferences.defaultRestTime);
+                  setRestTimeSeconds(user.preferences.defaultRestTime.toString());
                   setShowRestTimerModal(true);
                 }}
               />
@@ -457,14 +481,8 @@ export default function ProfileScreen() {
               <View style={modalStyles.inputContainer}>
                 <TextInput
                   style={modalStyles.timerInput}
-                  value={selectedRestTime.toString()}
-                  onChangeText={(text) => {
-                    const value = parseInt(text);
-                    if (!isNaN(value)) {
-                      // Clamp value between 5 and 600 seconds (10 minutes)
-                      setSelectedRestTime(Math.min(Math.max(value, 5), 600));
-                    }
-                  }}
+                  value={restTimeSeconds}
+                  onChangeText={handleRestTimeChange}
                   keyboardType="number-pad"
                   placeholder="Enter seconds"
                 />
@@ -475,8 +493,8 @@ export default function ProfileScreen() {
                 minimumValue={5}
                 maximumValue={600} // Increased to 10 minutes (600 seconds)
                 step={5}
-                value={selectedRestTime}
-                onValueChange={setSelectedRestTime}
+                value={parseInt(restTimeSeconds, 10) || 0}
+                onValueChange={(value) => setRestTimeSeconds(value.toString())}
                 minimumTrackTintColor={colors.primary}
                 maximumTrackTintColor={colors.border}
                 thumbTintColor={colors.primary}
@@ -484,13 +502,13 @@ export default function ProfileScreen() {
               />
               
               <Text style={modalStyles.timerText}>
-                {selectedRestTime} seconds ({Math.floor(selectedRestTime / 60)}:{(selectedRestTime % 60).toString().padStart(2, '0')})
+                {restTimeSeconds} seconds ({Math.floor((parseInt(restTimeSeconds, 10) || 0) / 60)}:{((parseInt(restTimeSeconds, 10) || 0) % 60).toString().padStart(2, '0')})
               </Text>
               
               <TouchableOpacity
                 style={modalStyles.confirmButton}
                 onPress={() => {
-                  updateUserPreference('defaultRestTime', selectedRestTime);
+                  updateUserPreference('defaultRestTime', parseInt(restTimeSeconds, 10) || 0);
                   setShowRestTimerModal(false);
                 }}
               >
